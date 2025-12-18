@@ -157,7 +157,7 @@ class Game {
         document.getElementById('btn-back-to-menu').onclick = () => this.hideCustomMenu();
         document.getElementById('btn-import-custom').onclick = () => this.importCustomFromInput();
         document.getElementById('btn-go-to-gallery').onclick = () => {
-            window.open('https://gall.dcinside.com/mini/board/view/?id=itsjustforme&no=272&page=1', '_blank');
+            window.open('https://gall.dcinside.com/mini/board/view/?id=zipalpha&no=23&page=1', '_blank');
         };
 
         document.getElementById('btn-play-again').onclick = () => {
