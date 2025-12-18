@@ -8,6 +8,7 @@ class MapEditor {
         this.isDrawing = false; // 드래그 상태 관리
         this.lastX = -1; // 마지막 드로잉 좌표 (중복 방지)
         this.lastY = -1;
+        this.isVerified = false; // 맵 검증 상태
 
         this.paletteItems = [
             { type: TILE_TYPES.WALL, label: 'WALL', symbol: '▩' },
@@ -102,7 +103,7 @@ class MapEditor {
 
             this.lastX = x;
             this.lastY = y;
-            document.getElementById('btn-export').disabled = true;
+            this.isVerified = false; // 수정 시 검증 상태 초기화
             this.game.render();
         }
     }
@@ -115,6 +116,7 @@ class MapEditor {
 
     enterEditor() {
         this.isVerifying = false;
+        this.isVerified = false;
         document.getElementById('main-menu').classList.remove('active');
         document.getElementById('game-canvas-wrapper').className = 'editor-mode';
         document.querySelectorAll('.editor-only').forEach(el => el.classList.remove('hidden'));
@@ -169,8 +171,8 @@ class MapEditor {
             if (allPainted) {
                 this.game.isGameActive = false;
                 setTimeout(() => {
-                    this.game.showFullMessage("TEST CLEAR!", "이제 코드를 추출(EXPORT)할 수 있습니다.", { showClose: true });
-                    document.getElementById('btn-export').disabled = false;
+                    this.isVerified = true; // 검증 성공
+                    this.game.showFullMessage("맵 검증 완료!", "이제 코드를 추출(EXPORT)할 수 있습니다.", { showClose: true });
                     this.stopTestPlay();
                 }, 50);
             }
@@ -202,6 +204,13 @@ class MapEditor {
     }
 
     exportMap() {
+        if (!this.isVerified) {
+            this.game.showFullMessage("검증 필요", "맵을 클리어한 후에 내보낼 수 있습니다.", {
+                showClose: false,
+                autoClose: 2000
+            });
+            return;
+        }
         const name = document.getElementById('input-map-name').value;
         const creator = document.getElementById('input-creator').value;
         const data = this.game.grid.map(row => row.map(t => t.type));
@@ -259,7 +268,7 @@ class MapEditor {
 
                     this.game.loadMap(mapData);
                     this.game.isGameActive = false;
-                    document.getElementById('btn-export').disabled = true;
+                    this.isVerified = false; // 새로 불러온 맵도 검증 필요
                     this.game.render();
 
                     modal.classList.add('hidden');

@@ -30,6 +30,7 @@ class Game {
 
         this.tutorialStep = 0;
         this.moveHistory = [];
+        this.autoCloseTimeout = null;
         this.initEventListeners();
         this.initVersionDisplay();
         this.initSoundControls();
@@ -144,6 +145,9 @@ class Game {
         bindMobileBtn('ctrl-right', 1, 0);
 
         document.getElementById('btn-show-patches').onclick = () => this.showPatchNotes();
+        document.getElementById('btn-report-bug').onclick = () => {
+            window.open('https://open.kakao.com/o/gGMPfc7h', '_blank');
+        };
         document.getElementById('btn-hide-patches').onclick = () => this.hidePatchNotes();
         document.getElementById('btn-close-modal').onclick = () => document.getElementById('modal-container').classList.add('hidden');
         document.getElementById('btn-restart').onclick = () => { if (this.isGameActive) this.restartLevel(); };
@@ -492,7 +496,7 @@ class Game {
     startTutorial() { this.tutorialStep = 1; this.showTutorialStep(); }
     nextTutorial() { this.tutorialStep++; if (this.tutorialStep > 5) { document.getElementById('modal-container').classList.add('hidden'); this.exitToMenu(); } else this.showTutorialStep(); }
     showTutorialStep() {
-        const steps = ["", "바닥에 모두 색을 칠하는 게임이에요.", "색상은 순서대로 변해요.<br><br><span style='color:#ef4444'>빨강</span> → <span style='color:#3b82f6'>파랑</span> → <span style='color:#eab308'>노랑</span>", "어떤 바닥은 특정 색상만 칠할 수 있어요.<br><br>아이콘을 잘 확인해 보세요! (▲, ■, ●)", "어떤 바닥은 두 번 밟아야 색이 칠해지기도 해요.<br><br>➁ 아이콘이 있다면 신중하게 경로를 짜보세요!", "또 어떤 바닥은 색상 순서를 뒤집기도 해요.<br><br>⇄ 발판을 밟으면 순서가 반대로 바뀝니다.", "<b>맵 만들기</b>로 맵을 만들어 친구와 공유할 수도 있어요! 만들어서 친구한테 풀게 해보세요."];
+        const steps = ["", "모든바닥에 색을칠하는게 목표인 게임이에요.", "바닥에 칠하는 색상은 순서대로 변해요.<br><br><span style='color:#ef4444'>빨강</span> → <span style='color:#3b82f6'>파랑</span> → <span style='color:#eab308'>노랑</span>", "어떤 바닥은 특정 색상만 칠할 수 있어요.<br><br>아이콘을 잘 확인해 보세요! (<span style='color:#ef4444'>▲</span>, <span style='color:#3b82f6'>■</span>, <span style='color:#eab308'>●</span>)", "어떤 바닥은 두 번 밟아야 색이 칠해지기도 해요.<br><br>➁ 아이콘이 있다면 신중하게 경로를 짜보세요!", "또 어떤 바닥은 색상 순서를 뒤집기도 해요.<br><br>⇄ 발판을 밟으면 순서가 반대로 바뀝니다.", "<b>맵 만들기</b>로 맵을 만들어 친구와 공유할 수도 있어요! 만들어서 친구한테 풀게 해보세요."];
         this.showFullMessage("게임 방법", steps[this.tutorialStep], { showTutorialNext: true, showClose: true });
     }
 
@@ -562,6 +566,15 @@ class Game {
         if (input) input.classList.toggle('hidden', !options.showLoad);
 
         document.getElementById('modal-container').classList.remove('hidden');
+
+        // Auto Close logic
+        if (this.autoCloseTimeout) clearTimeout(this.autoCloseTimeout);
+        if (options.autoClose) {
+            this.autoCloseTimeout = setTimeout(() => {
+                document.getElementById('modal-container').classList.add('hidden');
+                this.autoCloseTimeout = null;
+            }, options.autoClose);
+        }
     }
 
     updateHUD() {
