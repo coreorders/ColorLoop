@@ -56,10 +56,13 @@ class MapManager {
     loadMap(code) {
         if (!code) return null;
 
+        // 웹 플랫폼(디시 등) 복사 시 발생하는 공백, 줄바꿈, 특수 기호 정규화
+        const cleanCode = code.trim().replace(/\s/g, '');
+
         try {
             // V2 포맷 체크
-            if (code.startsWith("V2|")) {
-                const parts = code.split('|');
+            if (cleanCode.startsWith("V2|")) {
+                const parts = cleanCode.split('|');
                 if (parts.length < 6) return null;
 
                 const hashInCode = parts.pop();
@@ -75,8 +78,14 @@ class MapManager {
                 const [w, h] = size.split('x').map(Number);
                 const [sx, sy] = start.split(',').map(Number);
 
-                // 메타데이터 복원
-                const metaStr = decodeURIComponent(atob(encodedMeta));
+                // 메타데이터 복원 (atob 실패 가능성 대비)
+                let metaStr;
+                try {
+                    metaStr = decodeURIComponent(atob(encodedMeta));
+                } catch (metaErr) {
+                    console.error("Meta decode failed:", metaErr);
+                    return null;
+                }
                 const [mapName, mapCreator] = metaStr.split('|');
 
                 // 그리드 복원
@@ -98,8 +107,13 @@ class MapManager {
                 };
             }
 
-            // 기존 V1 호환 (Base64 JSON)
-            const decoded = decodeURIComponent(atob(code));
+            // 기존 V1 호환 (atob 실패 가능성 대비)
+            let decoded;
+            try {
+                decoded = decodeURIComponent(atob(cleanCode));
+            } catch (v1Err) {
+                return null;
+            }
             const [json, hash] = decoded.split("|");
 
             if (this.generateHashV1(json) !== hash) {
