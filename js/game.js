@@ -32,8 +32,53 @@ class Game {
         this.moveHistory = [];
         this.initEventListeners();
         this.initVersionDisplay();
+        this.initSoundControls();
         this.gameLoop();
         this.showLobby();
+    }
+
+    initSoundControls() {
+        const hudToggle = document.getElementById('sound-toggle-btn');
+        const lobbyToggle = document.getElementById('lobby-sound-btn');
+
+        const updateSoundIcons = (isMuted) => {
+            const iconOn = document.getElementById('icon-sound-on');
+            const iconOff = document.getElementById('icon-sound-off');
+            if (iconOn) iconOn.classList.toggle('hidden', isMuted);
+            if (iconOff) iconOff.classList.toggle('hidden', !isMuted);
+
+            if (lobbyToggle) {
+                const lobbyOn = lobbyToggle.querySelector('.icon-on');
+                const lobbyOff = lobbyToggle.querySelector('.icon-off');
+                if (lobbyOn) lobbyOn.classList.toggle('hidden', isMuted);
+                if (lobbyOff) lobbyOff.classList.toggle('hidden', !isMuted);
+            }
+        };
+
+        const handleToggle = () => {
+            const isMuted = window.audioManager.toggleMute();
+            updateSoundIcons(isMuted);
+            if (!isMuted) {
+                window.audioManager.resume();
+                window.audioManager.startBGM();
+            }
+        };
+
+        if (hudToggle) hudToggle.onclick = handleToggle;
+        if (lobbyToggle) lobbyToggle.onclick = handleToggle;
+
+        const enableAudio = async () => {
+            window.audioManager.init();
+            await window.audioManager.resume();
+            window.audioManager.startBGM();
+            updateSoundIcons(window.audioManager.isMuted);
+            window.removeEventListener('click', enableAudio);
+            window.removeEventListener('keydown', enableAudio);
+            window.removeEventListener('touchstart', enableAudio);
+        };
+        window.addEventListener('click', enableAudio);
+        window.addEventListener('keydown', enableAudio);
+        window.addEventListener('touchstart', enableAudio);
     }
 
     initVersionDisplay() {
@@ -385,10 +430,21 @@ class Game {
         let delta = this.player.isReversed ? -1 : 1;
         let hIdx = willChangeColor ? (this.player.colorIndex + delta + 3) % 3 : this.player.colorIndex;
         if (nextTile.canEnter(this.player.colorLoop[hIdx])) {
+            window.audioManager.playMove(); // 이동 효과음
             this.saveState();
             currentTile.onLeave(this);
             this.player.x = nx; this.player.y = ny;
             if (willChangeColor) this.player.colorIndex = hIdx;
+
+            // 색칠 사운드 조건 (이미 색칠된 경우는 제외)
+            if (!nextTile.isPainted && nextTile.type !== TILE_TYPES.WALL) {
+                if (nextTile.type === TILE_TYPES.TWICE) {
+                    if (nextTile.stepCount === 1) window.audioManager.playPaint(); // 두번째 밟을 때 채색 소리
+                } else {
+                    window.audioManager.playPaint();
+                }
+            }
+
             nextTile.onEnter(this);
             this.checkWinCondition();
             this.updateHUD();
@@ -421,6 +477,7 @@ class Game {
             }
         }
         if (portals.length > 0) {
+            window.audioManager.playTeleport(); // 텔레포트 효과음
             const target = portals[0];
             this.player.x = target.x;
             this.player.y = target.y;
@@ -444,6 +501,7 @@ class Game {
         for (let y = 0; y < this.height; y++) { for (let x = 0; x < this.width; x++) { if (this.grid[y][x].type !== TILE_TYPES.WALL && !this.grid[y][x].isPainted) { allPainted = false; break; } } if (!allPainted) break; }
         if (allPainted) {
             this.isGameActive = false;
+            window.audioManager.playClear(); // 스테이지 클리어 사운드
             setTimeout(() => {
                 const time = ((Date.now() - this.startTime) / 1000).toFixed(3);
                 const isFinal = !this.isCustomPlay && this.currentStageIdx >= STAGES_DATA.length - 1;
@@ -458,6 +516,10 @@ class Game {
                 }
             }, 50);
         }
+    }
+
+    onTileBreak() {
+        window.audioManager.playBreak(); // 파손 효과음
     }
 
     showMessage(title, msg) {

@@ -1,5 +1,13 @@
 const PATCH_NOTES_DATA = [
     {
+        version: "v0.7.1",
+        date: "2025.12.18",
+        changes: [
+            "사운드 시스템 최적화: BGM 볼륨 및 멜로디 선명도 대폭 상향",
+            "오디오 호환성 개선: 모바일 환경(Touch) 및 데스크탑 초기 활성화 로직 보강"
+        ]
+    },
+    {
         version: "v0.5.0",
         date: "2025.12.18",
         changes: [

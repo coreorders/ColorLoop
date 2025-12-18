@@ -76,6 +76,7 @@ class Tile {
         // TWICE 타일(기존 GLASS)은 2회 이상 진입 후 이탈 시 파손
         if (this.type === TILE_TYPES.TWICE && this.stepCount >= 2) {
             this.isBroken = true;
+            if (game.onTileBreak) game.onTileBreak();
         }
     }
 }

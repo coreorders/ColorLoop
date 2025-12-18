@@ -255,9 +255,42 @@ body {
 }
 
 #custom-menu {
-    max-width: 450px;
-    width: 90%;
-    max-height: 80vh;
+    position: relative;
+}
+
+.lobby-sound-toggle {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.lobby-sound-toggle:hover {
+    transform: scale(1.1);
+    background: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+    border-color: rgba(139, 92, 246, 0.8);
+}
+
+.lobby-sound-toggle svg {
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+}
+
+.lobby-sound-toggle:active {
+    transform: scale(0.95);
 }
 
 .menu-title {
