@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Project Color-Loop</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Orbit&family=Pretendard:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="game-container">
+        <header id="hud-top">
+            <div class="hud-item" id="loop-sequence-display">
+                <div id="sequence-steps"></div>
+            </div>
+        </header>
+
+        <main id="game-canvas-wrapper" class="play-mode">
+            <div id="editor-palette" class="editor-only hidden">
+                <h3>PALETTE</h3>
+                <div class="palette-grid" id="palette-items">
+                    <!-- Tiles will be injected -->
+                </div>
+            </div>
+
+            <canvas id="game-canvas"></canvas>
+
+            <div id="mobile-controls" class="mobile-only hidden">
+                <button id="ctrl-up" class="dpad-btn"></button>
+                <div class="dpad-row">
+                    <button id="ctrl-left" class="dpad-btn"></button>
+                    <div class="dpad-center"></div>
+                    <button id="ctrl-right" class="dpad-btn"></button>
+                </div>
+                <button id="ctrl-down" class="dpad-btn"></button>
+            </div>
+
+            <div id="ui-overlay">
+                <!-- Game Over / Clear Screens will be injected here -->
+                <div id="main-menu" class="overlay-screen active">
+                    <h1 class="game-title">COLOR<span>LOOP</span></h1>
+                    <div class="menu-buttons vertical">
+                        <button id="btn-tutorial" class="premium-btn">게임 방법</button>
+                        <button id="btn-play" class="premium-btn">게임 시작</button>
+                        <button id="btn-custom" class="premium-btn accent-light">커스텀 모드</button>
+                        <button id="btn-editor" class="premium-btn secondary">맵 만들기</button>
+                        <button id="btn-show-patches" class="premium-btn secondary small"
+                            style="margin-top: 10px;">패치노트</button>
+                    </div>
+                </div>
+
+                <div id="custom-menu" class="overlay-screen">
+                    <h2 class="menu-title">커스텀 맵 목록</h2>
+                    <div class="import-section">
+                        <input type="text" id="input-import-code" placeholder="맵 코드를 여기에 붙여넣으세요!">
+                        <button id="btn-import-custom" class="premium-btn small">추가</button>
+                    </div>
+                    <div id="custom-list-container">
+                        <div id="custom-map-list">
+                            <!-- Saved maps will be here -->
+                        </div>
+                    </div>
+                    <button id="btn-back-to-menu" class="premium-btn secondary small">뒤로가기</button>
+                    <button id="btn-go-to-gallery" class="premium-btn accent-light small"
+                        style="margin-top: 10px; width: 100%;">커스텀맵 공유 게시판</button>
+                </div>
+
+                <div id="patch-notes-menu" class="overlay-screen">
+                    <h2 class="menu-title">패치노트</h2>
+                    <div id="patch-info-header">
+                        <div class="info-item"><span>제작자</span><strong>민대식</strong></div>
+                        <div class="info-item"><span>버전</span><strong id="patch-version-val">...</strong></div>
+                    </div>
+                    <div id="patch-notes-content">
+                        <!-- Patch notes list will be injected -->
+                    </div>
+                    <button id="btn-hide-patches" class="premium-btn secondary small">뒤로가기</button>
+                </div>
+            </div>
+
+            <div id="editor-controls" class="editor-only hidden">
+                <div class="editor-row">
+                    <input type="text" id="input-map-name" placeholder="레벨 이름을 입력하세요" value="커스텀 레벨">
+                    <input type="text" id="input-creator" placeholder="제작자 이름을 입력하세요" value="제작자">
+                </div>
+                <div class="editor-row">
+                    <button id="btn-test-play" class="premium-btn">테스트하기</button>
+                    <button id="btn-stop-test" class="premium-btn secondary hidden">테스트 중단</button>
+                    <button id="btn-export" class="premium-btn secondary" disabled>맵 내보내기</button>
+                    <button id="btn-import" class="premium-btn secondary">맵 가져오기</button>
+                    <button id="btn-exit-editor" class="premium-btn secondary">나가기</button>
+                </div>
+            </div>
+        </main>
+
+        <footer id="hud-bottom">
+            <div id="map-info">
+                <span id="map-name">Tutorial Level</span>
+                <span id="creator-name">by System</span>
+            </div>
+            <div id="controls-help">
+                Use Arrow Keys / WASD to move
+            </div>
+            <div id="version-info" class="active">...</div>
+            <div id="game-actions" class="hidden">
+                <button id="btn-undo" class="premium-btn secondary icon-btn" title="Undo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6-6m-6 6l6 6" />
+                    </svg>
+                </button>
+                <button id="btn-restart" class="premium-btn secondary icon-btn" title="Restart">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8m0-5v5h-5" />
+                    </svg>
+                </button>
+                <button id="btn-exit" class="premium-btn secondary icon-btn" title="Exit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-container" class="hidden">
+        <div class="modal-content">
+            <h2 id="modal-title">Title</h2>
+            <div id="modal-body">
+                <textarea id="map-code-input" class="hidden" placeholder="Paste map code here..."></textarea>
+                <div id="modal-message"></div>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-next-level" class="premium-btn hidden">다음 단계</button>
+                <button id="btn-tutorial-next" class="premium-btn hidden">다음</button>
+                <button id="btn-confirm-action" class="premium-btn hidden">확인</button>
+                <button id="btn-play-again" class="premium-btn secondary hidden">다시 하기</button>
+                <button id="btn-load-code" class="premium-btn hidden">불러오기</button>
+                <button id="btn-close-modal" class="premium-btn secondary">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/tiles.js"></script>
+    <script src="js/mapManager.js"></script>
+    <script src="js/patchNotes.js"></script>
+    <script src="js/tutorial.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/editor.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,740 @@
+:root {
+    --bg-dark: #0f172a;
+    /* 딥 네이비 배경 */
+    --bg-card: #1e293b;
+    /* 다크 블루 그레이 카드 */
+    --text-primary: #f8fafc;
+    /* 밝은 텍스트 */
+    --text-secondary: #94a3b8;
+    --color-red: #ef4444;
+    --color-blue: #3b82f6;
+    --color-yellow: #facc15;
+    --accent: #8b5cf6;
+    --accent-glow: rgba(139, 92, 246, 0.4);
+    --glass: rgba(15, 23, 42, 0.7);
+    /* 어두운 반투명 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Jua', 'Pretendard', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    width: 100%;
+    max-width: 600px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    position: relative;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+/* HUD Top */
+#hud-top {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hud-item .label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+
+#sequence-steps {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.seq-step {
+    font-size: 14px;
+    opacity: 0.4;
+    transition: all 0.3s;
+}
+
+.seq-step.active {
+    opacity: 1;
+    transform: scale(1.2);
+    text-shadow: 0 0 8px currentColor;
+}
+
+.seq-step.red {
+    color: var(--color-red);
+}
+
+.seq-step.blue {
+    color: var(--color-blue);
+}
+
+.seq-step.yellow {
+    color: var(--color-yellow);
+}
+
+.sep {
+    opacity: 0.2;
+    font-size: 12px;
+}
+
+.color-preview {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Symbols */
+.symbol {
+    width: 16px;
+    height: 16px;
+}
+
+.red .symbol {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 16px solid white;
+}
+
+.blue .symbol {
+    background: white;
+    border-radius: 2px;
+}
+
+.yellow .symbol {
+    background: white;
+    border-radius: 50%;
+}
+
+/* Game Canvas */
+#game-canvas-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: #0f172a;
+    touch-action: none;
+}
+
+/* Mobile Controls - Re-Styled for Kids */
+#mobile-controls {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    /* 중앙 배치를 위해 간격 소폭 확대 */
+    z-index: 50;
+    /* 모달보다 낮게 설정 */
+    pointer-events: none;
+    /* 컨테이너 자체는 통과하도록 */
+}
+
+.dpad-row {
+    display: flex;
+    gap: 10px;
+}
+
+.dpad-btn {
+    width: 80px;
+    /* 중앙 배치이므로 크기를 더 키움 */
+    height: 80px;
+    background: rgba(255, 255, 255, 0.03);
+    /* 초연한 반투명 회색조 */
+    border: none;
+    border-radius: 50%;
+    color: transparent;
+    /* 아이콘 제거 효과 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: none;
+    transition: all 0.1s;
+    pointer-events: auto;
+    /* 버튼은 클릭 가능하도록 */
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.dpad-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.08);
+    /* 클릭 시에만 살짝 보임 */
+}
+
+.dpad-center {
+    width: 70px;
+}
+
+/* Override .hidden for actual mobile users */
+@media (hover: none) and (pointer: coarse),
+(max-width: 768px) {
+    #mobile-controls.mobile-only {
+        display: flex;
+    }
+}
+
+#game-canvas {
+    image-rendering: pixelated;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* UI Overlays */
+#ui-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    /* 클릭 가로채기 방지 */
+}
+
+.overlay-screen {
+    pointer-events: auto;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+    background: rgba(15, 23, 42, 0.9);
+    padding: 40px;
+    border-radius: 40px;
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+.overlay-screen.active {
+    display: flex;
+}
+
+#custom-menu {
+    max-width: 450px;
+    width: 90%;
+    max-height: 80vh;
+}
+
+.menu-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--accent);
+}
+
+.import-section {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.import-section input {
+    flex: 1;
+    background: #0f172a;
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 10px;
+    color: var(--text-primary);
+    font-family: 'Jua', sans-serif;
+}
+
+#custom-list-container {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.custom-map-item {
+    background: var(--bg-card);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: default;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.map-btn-wrapper {
+    position: relative;
+}
+
+.delete-map-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 5;
+    transition: transform 0.2s;
+}
+
+.delete-map-btn:hover {
+    transform: scale(1.2);
+    background: #a855f7;
+}
+
+.custom-map-item:hover {
+    transform: scale(1.02);
+    border-color: var(--accent);
+}
+
+.map-item-info {
+    text-align: left;
+}
+
+.map-item-name {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.map-item-creator {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-buttons.vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 250px;
+}
+
+.menu-buttons.vertical .premium-btn {
+    margin: 0;
+    width: 100%;
+}
+
+.premium-btn.accent-light {
+    background: #a855f7;
+    box-shadow: 0 4px 0 #7e22ce;
+}
+
+.premium-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 8px;
+    box-shadow: 0 4px 0 #6d28d9;
+    text-transform: uppercase;
+}
+
+.premium-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #6d28d9;
+}
+
+.premium-btn.secondary {
+    background: var(--bg-card);
+    box-shadow: 0 4px 0 #0f172a;
+}
+
+.premium-btn.small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 0 #0f172a;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#modal-message {
+    margin: 20px 0;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* HUD Bottom */
+#hud-bottom {
+    height: 70px;
+    background: var(--glass);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#map-info,
+#controls-help {
+    display: none !important;
+}
+
+#version-info {
+    font-family: 'Orbit', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+
+#game-actions {
+    display: flex;
+    gap: 20px;
+}
+
+#game-actions .icon-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    /* Neon Glow Effect */
+    box-shadow:
+        0 0 10px rgba(59, 130, 246, 0.5),
+        inset 0 0 10px rgba(139, 92, 246, 0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#game-actions .icon-btn svg {
+    width: 28px;
+    height: 28px;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+}
+
+/* 개별 버튼 글로우 테마 */
+#btn-undo {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4), inset 0 0 10px rgba(59, 130, 246, 0.2) !important;
+}
+
+#btn-restart {
+    border-color: rgba(139, 92, 246, 0.5) !important;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4), inset 0 0 10px rgba(139, 92, 246, 0.2) !important;
+}
+
+#btn-exit {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4), inset 0 0 10px rgba(59, 130, 246, 0.2) !important;
+}
+
+#game-actions .icon-btn:hover {
+    transform: scale(1.1) translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.3) !important;
+    border-color: white !important;
+}
+
+#game-actions .icon-btn:active {
+    transform: scale(0.95);
+}
+
+#patch-info-header {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-item span {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.info-item strong {
+    font-size: 1rem;
+    color: var(--accent-light);
+}
+
+#patch-notes-content {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    height: 350px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.patch-scroll-area {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* 스크롤바 커스텀 */
+.patch-scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.patch-scroll-area::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.patch-scroll-area::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}
+
+#patch-notes-content p {
+    margin-bottom: 10px;
+}
+
+#patch-notes-content li {
+    list-style: none;
+    position: relative;
+    padding-left: 20px;
+}
+
+#patch-notes-content li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+
+#timer-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+/* Editor Layout */
+#game-canvas-wrapper.editor-mode {
+    flex-direction: column;
+}
+
+.editor-only.hidden {
+    display: none !important;
+}
+
+#editor-palette {
+    width: 100%;
+    padding: 8px;
+    /* 패딩 축소 */
+    background: rgba(15, 23, 42, 0.9);
+    border-bottom: 2px solid var(--accent);
+}
+
+#editor-palette h3 {
+    font-size: 0.7rem;
+    /* 폰트 축소 */
+    margin-bottom: 5px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.palette-grid {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    /* 간격 축소 */
+    flex-wrap: wrap;
+    /* 줄바꿈 적용 */
+}
+
+.palette-item {
+    width: 38px;
+    /* 크기 축소 */
+    height: 38px;
+    background: var(--bg-card);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.palette-item span {
+    font-size: 1.2rem;
+    /* 아이콘 크기 조정 */
+}
+
+/* 에디터 모드일 때 HUD 가시성 제어 */
+#game-canvas-wrapper.editor-mode~header#hud-top,
+#game-canvas-wrapper.editor-mode~#hud-bottom {
+    display: none !important;
+}
+
+/* 에디터 모드일 때 캔버스 영역 최대화 */
+#game-canvas-wrapper.editor-mode {
+    background: #020617;
+}
+
+.palette-item:hover {
+    transform: scale(1.1);
+}
+
+.palette-item.active {
+    border-color: var(--accent);
+    background: var(--bg-dark);
+}
+
+#editor-controls {
+    width: 100%;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    padding: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.editor-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+#editor-controls input {
+    background: #0f172a;
+    border: 1px solid var(--accent);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    flex: 1;
+}
+
+#editor-controls .premium-btn {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+}
+
+/* Modal */
+#modal-container {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    /* 모바일 조작기보다 압도적으로 높게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+}
+
+#modal-container.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 30px;
+    width: 90%;
+    max-width: 400px;
+    border: 4px solid var(--accent);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    background: #0f172a;
+    color: var(--text-primary);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 16px 0;
+    resize: none;
+}
