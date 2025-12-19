@@ -35,6 +35,30 @@ const STAGES_DATA = [
     },
     {
         "level": 6,
+        "startMessage": "색상이 조금 더 다양하게 배치된 맵입니다. 효율적인 경로를 구상해보세요!",
+        "mapCode": "V3|10,10|1,1|mZmZmZmQCZmZmZkAAACZmQAQAJmZAAIAmZkAAACZmQAAAJmZmZmZmZmZmZmZmZmZmZk=|JUVDJUJCJUE0JUVDJThBJUE0JUVEJTg1JTgwJTIwJUVCJUEwJTg4JUVCJUIyJUE4JTdDJUVDJUEwJTlDJUVDJTlFJTkxJUVDJTlFJTkw|1ba504",
+        "clearMessage": "훌륭합니다! 이제 복잡한 맵도 거뜬하시겠군요."
+    },
+    {
+        "level": 7,
+        "startMessage": "일곱 번째 도전! 색상의 흐름을 잘 파악하여 막다른 길에 갇히지 않도록 주의하세요.",
+        "mapCode": "V3|10,10|1,1|kFAAAJmQCZmQOZAJmZEJkAmZkAmQAAAACZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZk=|JUVDJUJCJUE0JUVDJThBJUE0JUVEJTg1JTgwJTIwJUVCJUEwJTg4JUVCJUIyJUE4JTdDJUVDJUEwJTlDJUVDJTlFJTkxJUVDJTlFJTkw|4f28c6",
+        "clearMessage": "훌륭합니다! 이제 퍼즐의 고수가 다 되셨군요."
+    },
+    {
+        "level": 8,
+        "startMessage": "여덟 번째 단계! 더욱 정교한 움직임이 필요합니다. 전체적인 구조를 먼저 살펴보세요.",
+        "mapCode": "V3|10,10|1,1|mZmZmZmQAAAAAJBQmZmQmQCZmZCQAAAAAJCZCZmZkJkJmZmQmQmZmZCZCZmZkAAJmZk=|JUVDJUJCJUE0JUVDJThBJUE0JUVEJTg1JTgwJTIwJUVCJUEwJTg4JUVCJUIyJUE4JTdDJUVDJUEwJTlDJUVDJTlFJTkxJUVDJTlFJTkw|7c101d",
+        "clearMessage": "훌륭합니다! 이제 퍼즐의 진정한 매력을 느끼고 계시는군요."
+    },
+    {
+        "level": 9,
+        "startMessage": "처음엔 기초가 제일어려워!",
+        "mapCode": "V3|10,10|1,1|mZmZmZmQACmZmZAACZmZkAAJmZmTAAmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZk=|JUVDJUJCJUE0JUVDJThBJUE0JUVEJTg1JTgwJTIwJUVCJUEwJTg4JUVCJUIyJUE4JTdDJUVDJUEwJTlDJUVDJTlFJTkxJUVDJTlFJTkw|3a4fbb",
+        "clearMessage": "훌륭합니다! 단순해보이지만 복잡해요!"
+    },
+    {
+        "level": 10,
         "startMessage": "대망의 마지막 공식 스테이지입니다. 모든 실력을 발휘하세요!",
         "mapCode": "V2|10x10|1,1|0000000999009990099999909050990005900999000505099999999999999999999999999999999999999999999999999999|dHV0b3JpYWwlN0Njb3Jlb3JkZXJz|00412fe1ff",
         "clearMessage": "축하합니다! 모든 공식 스테이지를 정복하셨습니다. 이제 '맵 만들기'를 통해 친구를 골탕 먹여보세요!"
